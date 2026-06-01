@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tkski // Singularity</title>
+    <style>
+        :root {
+            --bg-color: #010102;
+            --accent-color: #66fcf1;
+            --accent-glow: rgba(102, 252, 241, 0.35);
+            --bh-core: #ffe600;
+            --bh-mid: #ff6a00;
+            --bh-edge: #ff2a00;
+            --text-color: #c5c6c7;
+            --card-bg: rgba(6, 7, 10, 0.88);
+            --terminal-bg: #030406;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: #ffffff;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* 3D RELATIVISTIC GRAVITATIONAL LENSING ENGINE */
+        .space-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #010103;
+            overflow: hidden;
+            perspective: 2000px;
+        }
+
+        .singularity-system {
+            position: relative;
+            width: 600px;
+            height: 600px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform-style: preserve-3d;
+        }
+
+        /* Perfect, un-distorted central shadow singularity */
+        .event-horizon {
+            width: 140px;
+            height: 140px;
+            background: #000000;
+            border-radius: 50%;
+            z-index: 10;
+            box-shadow: 0 0 40px 20px #000000;
+            position: absolute;
+            transform: translateZ(1px); /* Locks it into intermediate 3D depth alignment */
+        }
+
+        /* RELATIVISTIC BACKGROUND RING (Light warped up and around behind the core) */
+        .lensed-background-ring {
+            position: absolute;
+            width: 190px;
+            height: 190px;
+            border-radius: 50%;
+            background: transparent;
+            box-shadow: 0 0 30px 5px var(--bh-core),
+                        0 0 60px 20px var(--bh-mid),
+                        0 0 100px 35px var(--bh-edge);
+            opacity: 0.9;
+            z-index: 4; /* Deep layering depth stack */
+            transform: translateZ(-50px);
+            animation: DopplerShift 4s ease-in-out infinite alternate;
+        }
+
+        /* ACCRETION DISK: Split into strict 3D space planes via rotation angle matrices */
+        .accretion-disk-wrapper {
+            position: absolute;
+            width: 580px;
+            height: 580px;
+            transform-style: preserve-3d;
+            transform: rotateX(75deg) rotateY(-10deg); /* Tilt structure configuration */
+            z-index: 15; /* Spans across entire background spectrum */
+        }
+
+        /* The actual dust ring rotating through deep plane coordinates */
+        .disk-render {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle at center, 
+                transparent 22%, 
+                rgba(255, 230, 0, 0.9) 26%, 
+                rgba(255, 106, 0, 0.7) 34%, 
+                rgba(255, 42, 0, 0.4) 46%, 
+                transparent 65%
+            );
+            filter: blur(4px) contrast(150%);
+            animation: spinDisk 1.5s linear infinite;
+        }
+
+        @keyframes spinDisk {
+            0% { transform: rotateZ(0deg); }
+            100% { transform: rotateZ(360deg); }
+        }
+
+        @keyframes DopplerShift {
+            0% { transform: translateZ(-50px) scale(0.97); filter: brightness(0.9); }
+            100% { transform: translateZ(-50px) scale(1.03); filter: brightness(1.1); }
+        }
+
+        #bg-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 20;
+            pointer-events: none;
+            opacity: 0.45;
+        }
+
+        /* MAIN PAGE WRAPPER CONTAINER */
+        .wrapper {
+            position: relative;
+            z-index: 30;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* DISCORD COMPONENT CARD */
+        header {
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .discord-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(102, 252, 241, 0.1);
+            border-radius: 24px;
+            width: 400px;
+            padding: 30px;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            animation: floatCard 6s ease-in-out infinite;
+        }
+
+        @keyframes floatCard {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .pfp-container {
+            position: relative;
+            width: 115px;
+            height: 115px;
+            margin-bottom: 20px;
+        }
+
+        .pfp {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 4px solid var(--accent-color);
+            object-fit: cover;
+            background-color: #030406;
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .status-dot {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            width: 26px;
+            height: 26px;
+            background-color: #f04747;
+            border-radius: 50%;
+            border: 4px solid #06070a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .status-dot::after {
+            content: '';
+            width: 10px;
+            height: 2px;
+            background-color: #06070a;
+            border-radius: 1px;
+        }
+
+        .user-info h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .user-info .tag {
+            color: #8e9297;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+
+        .custom-status {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            border-left: 3px solid var(--accent-color);
+            margin-bottom: 25px;
+            color: #e3e5e8;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .badge {
+            background: rgba(102, 252, 241, 0.05);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-color);
+            border: 1px solid rgba(102, 252, 241, 0.2);
+        }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 40px;
+            cursor: pointer;
+            text-align: center;
+            animation: bounceIndicator 2s infinite;
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        @keyframes bounceIndicator {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-8px); }
+            60% { transform: translateY(-4px); }
+        }
+
+        /* TERMINAL VIEW DISPLAY AREA */
+        .about-section {
+            min-height: 100vh;
+            width: 100%;
+            max-width: 1050px;
+            padding: 60px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .terminal {
+            background: var(--terminal-bg);
+            border: 1px solid rgba(102, 252, 241, 0.15);
+            border-radius: 16px;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.95);
+            overflow: hidden;
+            min-height: 580px;
+            position: relative;
+        }
+
+        .terminal-header {
+            background: #06070a;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.02);
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .dot-r { background: #ff5f56; }
+        .dot-y { background: #ffbd2e; }
+        .dot-g { background: #27c93f; }
+        
+        .terminal-title {
+            margin-left: auto;
+            margin-right: auto;
+            font-size: 0.85rem;
+            color: #6272a4;
+            font-family: monospace;
+        }
+
+        .terminal-body {
+            padding: 40px;
+            font-family: 'Courier New', Courier, monospace;
+            line-height: 1.6;
+            color: #f8f8f2;
+            font-size: 1rem;
+            height: calc(100% - 43px);
+        }
+
+        /* 10-SECOND LOADER PROGRESS STRUCT */
+        #terminal-loader {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 450px;
+            width: 100%;
+        }
+
+        /* Perfectly proportioned sharp aspect ratio font adjustments */
+        .ascii-tk {
+            font-size: 1.6vw;
+            width: 60%;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 35px;
+            color: var(--accent-color);
+            text-shadow: 0 0 25px var(--accent-glow);
+            white-space: pre;
+            text-align: center;
+        }
+
+        .boot-bar-container {
+            width: 60%;
+            border: 1px solid rgba(102, 252, 241, 0.25);
+            height: 12px;
+            padding: 2px;
+            background: rgba(0,0,0,0.5);
+            margin-bottom: 15px;
+        }
+
+        .boot-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--accent-color);
+            box-shadow: 0 0 15px var(--accent-color);
+        }
+
+        .load-text {
+            font-size: 0.9rem;
+            letter-spacing: 4px;
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        #terminal-data {
+            display: none;
+        }
+
+        /* STREAM DATA ENGINE MAPPINGS */
+        .line {
+            white-space: nowrap;
+            overflow: hidden;
+            width: 0;
+            display: block;
+            transition: width 0.08s linear;
+        }
+
+        .line.streamed {
+            width: 100%;
+        }
+
+        .prompt { color: var(--accent-color); font-weight: bold; }
+        .keyword { color: #ff79c6; }
+        .string { color: #f1fa8c; }
+        .number { color: #bd93f9; }
+        .comment { color: #6272a4; font-style: italic; }
+        .function { color: #50fa7b; }
+
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="space-container">
+        <div class="singularity-system">
+            <div class="lensed-background-ring"></div>
+            <div class="event-horizon"></div>
+            
+            <div class="accretion-disk-wrapper">
+                <div class="disk-render"></div>
+            </div>
+        </div>
+        <canvas id="bg-canvas"></canvas>
+    </div>
+
+    <div class="wrapper">
+        <header id="top">
+            <div class="discord-card">
+                <div class="pfp-container">
+                    <img src="avatar.png" alt="TK" class="pfp" onerror="this.style.display='none';">
+                    <div class="status-dot"></div>
+                </div>
+                
+                <div class="user-info">
+                    <h2>TK</h2>
+                    <div class="tag">@tkski</div>
+                    
+                    <div class="custom-status">
+                        e^(iπ) + 1 = 0
+                    </div>
+
+                    <div class="badges">
+                        <div class="badge">Developer</div>
+                        <div class="badge">Mathematician</div>
+                        <div class="badge">HypeSquad</div>
+                    </div>
+                </div>
+            </div>
+
+            <a href="#about" class="scroll-hint">
+                ACCESS SYSTEM CONSOLE ↓
+            </a>
+        </header>
+
+        <section class="about-section" id="about">
+            <div class="terminal">
+                <div class="terminal-header">
+                    <div class="dot dot-r"></div>
+                    <div class="dot dot-y"></div>
+                    <div class="dot dot-g"></div>
+                    <div class="terminal-title">tk@core-system:~</div>
+                </div>
+                
+                <div class="terminal-body">
+                    <div id="terminal-loader">
+<div class="ascii-tk">
+ ________ __  
+/_  __/ //_/  
+ / / / ,&lt;     
+/_/ /_/|_|    
+</div>
+                        <div class="boot-bar-container">
+                            <div class="boot-bar" id="load-fill"></div>
+                        </div>
+                        <div class="load-text">LOADING...</div>
+                    </div>
+
+                    <div id="terminal-data">
+                        <div class="line"><span class="prompt">tk$</span> query-identity --verbose</div>
+                        <div class="line"><span class="comment">// Mapping structural architecture metrics...</span></div>
+                        <div class="line">[<span class="function">SUCCESS</span>] Target resolved successfully.</div>
+                        <div class="line">--------------------------------------------------</div>
+                        <div class="line"><span class="keyword">struct</span> <span class="function">Identity</span> {</div>
+                        <div class="line">&nbsp;&nbsp;user:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"TK"</span>,</div>
+                        <div class="line">&nbsp;&nbsp;locator:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"tkski"</span>,</div>
+                        <div class="line">&nbsp;&nbsp;core_logic:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"e^(iπ) + 1 = 0"</span>,</div>
+                        <div class="line">&nbsp;&nbsp;environments:&nbsp;&nbsp;&nbsp;&nbsp;[<span class="string">"Developer"</span>, <span class="string">"Mathematician"</span>],</div>
+                        <div class="line">&nbsp;&nbsp;status:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"Do Not Disturb"</span></div>
+                        <div class="line">};</div>
+                        <div class="line">--------------------------------------------------</div>
+                        <div class="line"><span class="prompt">tk$</span> runtime --compute-matrices</div>
+                        <div class="line"><span class="comment">// Syncing geometric vector and component mechanics...</span></div>
+                        <div class="line">&gt; Identity formula equation parameters: Loaded</div>
+                        <div class="line">&gt; Gravitational matrix boundary metrics: Active</div>
+                        <div class="line">--------------------------------------------------</div>
+                        <div class="line"><span class="prompt">tk$</span> <span class="string">_</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // BACKGROUND ACCRETION DRIFT PARTICLES Engine
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        const symbols = ['e', 'i', 'π', '1', '0', '+', '=', '∫', '∑', '√', 'λ', 'f(x)'];
+        const particleCount = 140;
+        const particles = [];
+
+        class RelativisticParticle {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.fontSize = Math.random() * 11 + 10;
+                this.text = symbols[Math.floor(Math.random() * symbols.length)];
+                this.speed = Math.random() * 2.2 + 0.8;
+                this.opacity = Math.random() * 0.45 + 0.1;
+            }
+            update() {
+                let dx = width/2 - this.x;
+                let dy = height/2 - this.y;
+                let dist = Math.sqrt(dx*dx + dy*dy);
+
+                if (dist < 70) { 
+                    this.reset(); 
+                } else {
+                    this.x += (dx / dist) * this.speed + Math.sin(dist / 12) * 0.5;
+                    this.y += (dy / dist) * this.speed + Math.cos(dist / 12) * 0.5;
+                }
+            }
+            draw() {
+                ctx.fillStyle = `rgba(102, 252, 241, ${this.opacity})`;
+                ctx.font = `${this.fontSize}px monospace`;
+                ctx.fillText(this.text, this.x, this.y);
+            }
+        }
+
+        for (let i = 0; i < particleCount; i++) particles.push(new RelativisticParticle());
+
+        function loop() {
+            ctx.clearRect(0, 0, width, height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(loop);
+        }
+        loop();
+
+        // INTRATERMINAL TIMER CORE ENGINE CONTROL CLOCK
+        const terminalSection = document.getElementById('about');
+        const fillBar = document.getElementById('load-fill');
+        const loaderBlock = document.getElementById('terminal-loader');
+        const dataBlock = document.getElementById('terminal-data');
+        const lines = document.querySelectorAll('.line');
+        
+        let bootTriggered = false;
+
+        const terminalObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !bootTriggered) {
+                    bootTriggered = true;
+                    runTerminalBoot();
+                }
+            });
+        }, { threshold: 0.15 });
+
+        terminalObserver.observe(terminalSection);
+
+        function runTerminalBoot() {
+            let progress = 0;
+            const bootDuration = 10000; 
+            const stepTime = 100; 
+            const increment = (100 / (bootDuration / stepTime));
+
+            const loaderTimer = setInterval(() => {
+                progress += increment;
+                fillBar.style.width = Math.min(progress, 100) + '%';
+                
+                if (progress >= 100) {
+                    clearInterval(loaderTimer);
+                    setTimeout(() => {
+                        loaderBlock.style.display = 'none';
+                        dataBlock.style.display = 'block';
+                        streamLines();
+                    }, 400);
+                }
+            }, stepTime);
+        }
+
+        function streamLines() {
+            lines.forEach((line, index) => {
+                setTimeout(() => {
+                    line.classList.add('streamed');
+                }, index * 45);
+            });
+        }
+    </script>
+</body>
+</html>

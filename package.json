@@ -1,0 +1,8 @@
+{
+  "name": "tkski-portfolio",
+  "version": "1.0.0",
+  "description": "tssotuff",
+  "scripts": {
+    "build": "echo 'Static site, no build step needed'"
+  }
+}
